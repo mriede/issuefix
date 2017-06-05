@@ -30,21 +30,33 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
-function getRandomProject(rows, cb) {
+function getRandomProject(res, rows, cb) {
+    if (rows.length < 1) {
+        res.send('No more issues! The world is finally at peace again!')
+        return
+    }
+
     let rand = getRandomInt(0, rows.length)
     let project = rows[rand]
+    cb(project)
+}
 
-    console.log('Getting Issues for Project: ' + project.project_name)
-    requestWithUserAgent(apiUrl + `/repos/${project.project_name}/issues`, (error, response, body) => {
-        let issues = JSON.parse(body)
-        if (issues.length < 1) {
-            rows.splice()
-            getRandomProject(rows, cb);
-        } else {
-            let issue = JSON.stringify(issues[getRandomInt(0, issues.length)])
-            cb(issue)
-            return
-        }  
+function getRandomIssue(rows, cb) {
+    getRandomProject(rows, (project) => {
+        console.log('Getting Issues for Project: ' + project.project_name)
+        requestWithUserAgent(apiUrl + `/repos/${project.project_name}/issues`, (error, response, body) => {
+            let issues = JSON.parse(body)
+            if (issues.length < 1) {
+                console.log('Removing: ' + project.project_name)
+
+                rows.splice(rows.indexOf(project), 1)
+                getRandomIssue(rows, cb)
+            } else {
+                let issue = JSON.stringify(issues[getRandomInt(0, issues.length)])
+                cb(issue)
+                return
+            }  
+        });
     });
 }
 
@@ -53,7 +65,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/issue', (req, res) => {
     db.all('SELECT * FROM projects', (err, rows) => {
-        getRandomProject(rows, (issue) => {
+        getRandomIssue(res, rows, (issue) => {
             res.send(issue)
         });
     });
