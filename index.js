@@ -50,7 +50,7 @@ function getRandomIssue(res, rows, cb) {
                 console.log('Removing: ' + project.project_name)
 
                 rows.splice(rows.indexOf(project), 1)
-                getRandomIssue(rows, cb)
+                getRandomIssue(res, rows, cb)
             } else {
                 let issue = JSON.stringify(issues[getRandomInt(0, issues.length)])
                 cb(issue)
