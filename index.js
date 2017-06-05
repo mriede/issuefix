@@ -41,8 +41,8 @@ function getRandomProject(res, rows, cb) {
     cb(project)
 }
 
-function getRandomIssue(rows, cb) {
-    getRandomProject(rows, (project) => {
+function getRandomIssue(res, rows, cb) {
+    getRandomProject(res, rows, (project) => {
         console.log('Getting Issues for Project: ' + project.project_name)
         requestWithUserAgent(apiUrl + `/repos/${project.project_name}/issues`, (error, response, body) => {
             let issues = JSON.parse(body)
