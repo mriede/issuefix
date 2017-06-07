@@ -44,7 +44,7 @@ function getRandomProject(res, rows, cb) {
 function getRandomIssue(res, rows, cb) {
     getRandomProject(res, rows, (project) => {
         console.log('Getting Issues for Project: ' + project.project_name)
-        requestWithUserAgent(apiUrl + `/repos/${project.project_name}/issues`, (error, response, body) => {
+        requestWithUserAgent(apiUrl + `/repos/${project.project_name}/issues?state=open`, (error, response, body) => {
             let issues = JSON.parse(body)
             if (issues.length < 1) {
                 console.log('Removing: ' + project.project_name)
